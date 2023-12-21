@@ -35,6 +35,7 @@ class Database:
             return vk_id
 
     def get_signup(self, user_id):
+        signup = ''
         with self.connection:
             result = self.cursor.execute("SELECT `signup` FROM `users` WHERE `user_id` = ?",
                                          (user_id,))
@@ -53,7 +54,6 @@ class Database:
                                        (tracker, user_id,))
 
     def get_track_number(self, user_id):
-        #  remake query system for another table
         tracker = ''
         with self.connection:
             result = self.cursor.execute("SELECT `track_number` FROM `users` WHERE `user_id` = ?",
@@ -63,6 +63,7 @@ class Database:
             return tracker
 
     def get_send_to_id(self, user_id):
+        receiver_id = ''
         with self.connection:
             sender_vk = self.get_vk_id(user_id)
             result = self.cursor.execute("SELECT `sent_to_id` FROM `google_form` WHERE `vk_id` = ?",
@@ -96,8 +97,8 @@ class Database:
             return bool(len(result))
 
     def get_google_form_columns(self, vk_id):
+        wish_list = []
         with self.connection:
-            wish_list = []
             result = self.cursor.execute(sql_query_get_from_sheet, (vk_id, )).fetchall()
             for row in result:
                 wish_list = list(row)
