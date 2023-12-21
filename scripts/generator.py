@@ -96,7 +96,7 @@ class Generator:
 
     def migrate_data_to_sqlite(self):
         data = pd.read_excel(self._path)
-        m = DBMigration('../data/database.db')
+        m = DBMigration('./data/database.db')
         for i, record in data.iterrows():
             m.add_user(record['vk_id'], record['send_to_id'], record['name'], record['address'],
                        record['post_index'], record['new_year_attr'], record['new_year_doings'],
