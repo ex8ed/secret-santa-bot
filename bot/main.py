@@ -27,7 +27,7 @@ logging.basicConfig(handlers=(file_log, console_out), level=logging.INFO)
 bot = Bot(token)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
-db = Database('database.db')
+db = Database('./data/database.db')
 
 
 @dp.message_handler(commands=['start'])
