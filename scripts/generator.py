@@ -35,7 +35,6 @@ class Generator:
         """ Given a list of people, assign each one a secret santa partner
             from the list and return the pairings as a dict. Implemented to always
             create a perfect cycle """
-        # TODO:
         self.get_people_from_doc()
         shuffle_ids = list(self._vk_id)
         random.shuffle(shuffle_ids)
