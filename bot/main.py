@@ -42,50 +42,58 @@ async def get_started(msg: types.Message):
 
 @dp.message_handler(lambda message: message.text == Bt.REGISTRY)
 async def registration(msg: types.Message):
-    await bot.send_message(msg.from_user.id, config.registration_message)
+    await bot.send_message(msg.from_user.id, config.registration_message, reply_markup=nav.back_menu)
     await Registration.vk_id.set()
 
 
 @dp.message_handler(state=Registration.vk_id)
 async def vk_id_processing(msg: types.Message, state: FSMContext):
-    if db.get_signup(msg.from_user.id) == 'setvkid':
-        if config.is_allowed(msg.text):
-            db.set_vk_id(msg.from_user.id, msg.text)
-            db.set_signup(msg.from_user.id, 'complete')
-            logging.info(config.new_vk_id % (msg.from_user.id, msg.text))
-            await bot.send_message(msg.from_user.id, config.registration_success, reply_markup=nav.main_menu)
-            await state.finish()
+    if msg.text != Bt.BACK:
+        if db.get_signup(msg.from_user.id) == 'setvkid':
+            if config.is_allowed(msg.text):
+                db.set_vk_id(msg.from_user.id, msg.text)
+                db.set_signup(msg.from_user.id, 'complete')
+                logging.info(config.new_vk_id % (msg.from_user.id, msg.text))
+                await bot.send_message(msg.from_user.id, config.registration_success, reply_markup=nav.main_menu)
+                await state.finish()
+            else:
+                await bot.send_message(msg.from_user.id, config.registration_failed)
+                await Registration.vk_id.set()
         else:
-            await bot.send_message(msg.from_user.id, config.registration_failed)
-            await Registration.vk_id.set()
+            await bot.send_message(msg.from_user.id, config.registration_already, reply_markup=nav.main_menu)
+            await state.finish()
     else:
-        await bot.send_message(msg.from_user.id, config.registration_already, reply_markup=nav.main_menu)
+        await bot.send_message(msg.from_user.id, config.back_to_menu_message, reply_markup=nav.main_menu)
         await state.finish()
 
 
 @dp.message_handler(lambda message: message.text == Bt.SET_TRACKER)
 async def set_track_number(msg: types.Message):
-    await bot.send_message(msg.from_user.id, config.track_message)
+    await bot.send_message(msg.from_user.id, config.track_message, reply_markup=nav.back_menu)
     await Tracking.set_track_number.set()
 
 
 @dp.message_handler(state=Tracking.set_track_number)
 async def track_number_processing(msg: types.Message, state: FSMContext):
-    if (db.get_signup(msg.from_user.id)) != 'setvkid':
-        if db.get_track_number(msg.from_user.id) == 'notimplemented':
-            if config.track_is_true(msg.text):
-                db.set_track_number(msg.from_user.id, msg.text)
-                logging.info(config.new_tracker % (msg.from_user.id, msg.text))
-                await bot.send_message(msg.from_user.id, config.track_success_updated, reply_markup=nav.main_menu)
-                await state.finish()
+    if msg.text != Bt.BACK:
+        if db.get_signup(msg.from_user.id) != 'setvkid':
+            if db.get_track_number(msg.from_user.id) == 'notimplemented':
+                if config.track_is_true(msg.text):
+                    db.set_track_number(msg.from_user.id, msg.text)
+                    logging.info(config.new_tracker % (msg.from_user.id, msg.text))
+                    await bot.send_message(msg.from_user.id, config.track_success_updated, reply_markup=nav.main_menu)
+                    await state.finish()
+                else:
+                    await bot.send_message(msg.from_user.id, config.track_failed)
+                    await Tracking.set_track_number.set()
             else:
-                await bot.send_message(msg.from_user.id, config.track_failed)
-                await Tracking.set_track_number.set()
+                await bot.send_message(msg.from_user.id, config.track_already, reply_markup=nav.main_menu)
+                await state.finish()
         else:
-            await bot.send_message(msg.from_user.id, config.track_already, reply_markup=nav.main_menu)
+            await bot.send_message(msg.from_user.id, config.registration_empty, reply_markup=nav.main_menu)
             await state.finish()
     else:
-        await bot.send_message(msg.from_user.id, config.registration_empty, reply_markup=nav.main_menu)
+        await bot.send_message(msg.from_user.id, config.back_to_menu_message, reply_markup=nav.main_menu)
         await state.finish()
 
 
