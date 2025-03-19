@@ -1,7 +1,9 @@
 # -*- coding: UTF-8 -*-
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+import dataclasses
 
 
+@dataclasses.dataclass
 class Buttons:
     REGISTRY = '👋 Регистрация'
     GET_MESSAGE = '📨 Мое задание'
